@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Civic Connect - Report. Track. Resolve.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="login-page-body">
+
+    <div class="landing-card">
+        <div class="landing-header">
+            <div class="landing-logo">
+                <i class="fa-solid fa-landmark"></i>
+            </div>
+            <h1 class="landing-title">Civic Connect</h1>
+            <p class="landing-subtitle">Report. Track. Resolve.</p>
+        </div>
+
+        <div class="landing-form">
+            <!-- Alert Box -->
+            <div id="error-message"
+                style="display:none; background:#FEF2F2; color:#B91C1C; padding:12px; border-radius:8px; margin-bottom:16px; font-size:14px; border:1px solid #FCA5A5;">
+            </div>
+
+            <form id="auth-form">
+
+                <!-- Registration Fields -->
+                <div id="register-fields" style="display: none;">
+                    <div style="display:flex; gap:12px; margin-bottom:12px;">
+                        <div style="flex:1;">
+                            <label class="form-label">First Name</label>
+                            <input type="text" id="reg-name" class="form-control" placeholder="Arjun">
+                        </div>
+                        <div style="flex:1;">
+                            <label class="form-label">Surname</label>
+                            <input type="text" id="reg-surname" class="form-control" placeholder="Verma">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:12px; margin-bottom:12px;">
+                        <div style="flex:1;">
+                            <label class="form-label">State</label>
+                            <select id="reg-state" class="form-control">
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Gujarat">Gujarat</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label class="form-label">District</label>
+                            <input type="text" id="reg-district" class="form-control" placeholder="Mumbai">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Common Credentials -->
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="name@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <!-- Role Selection (Visual Cards) -->
+                <div id="role-group" style="display:none; margin-top:20px;">
+                    <label class="form-label" style="text-align:center; margin-bottom:12px;">Select Account Type</label>
+                    <div class="role-select-box">
+                        <input type="hidden" id="role" value="public"> <!-- Default -->
+
+                        <div class="role-option active" onclick="selectRole('public', this)">
+                            <i class="fa-solid fa-user" style="display:block; font-size:24px; margin-bottom:4px;"></i>
+                            Public Citizen
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <div class="role-option" style="flex:1;" onclick="selectRole('admin', this)">
+                                <i class="fa-solid fa-building-columns"
+                                    style="display:block; font-size:20px; margin-bottom:4px;"></i>
+                                Authority
+                            </div>
+                            <div class="role-option" style="flex:1;" onclick="selectRole('ngo', this)">
+                                <i class="fa-solid fa-hand-holding-heart"
+                                    style="display:block; font-size:20px; margin-bottom:4px;"></i>
+                                NGO
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;" id="submit-btn">
+                    <span id="btn-text">Sign In</span>
+                    <span id="btn-loader" class="loader" style="display:none;"></span>
+                </button>
+            </form>
+
+            <div style="text-align:center; margin-top:24px; font-size:14px; color:#6B7280;">
+                <span id="toggle-text">Don't have an account?</span>
+                <a id="toggle-auth" style="color:#1E40AF; font-weight:600; cursor:pointer; margin-left:4px;">Create
+                    Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Selection Logic Script -->
+    <script>
+        function selectRole(role, el) {
+            document.getElementById('role').value = role;
+            document.querySelectorAll('.role-option').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
+
+    <script type="module" src="login.js"></script>
+</body>
+
+</html>

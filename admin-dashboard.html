@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Pravah 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Ensure stats and edit controls are always visible for admin dashboard */
+        .stats-grid,
+        #analytics-section {
+            display: grid !important;
+        }
+
+        .edit-btn {
+            display: inline-block !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo"><i class="fa-solid fa-city"></i><span>Pravah Admin</span></div>
+                <button id="close-sidebar" class="mobile-only"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard"><i
+                        class="fa-solid fa-chart-line"></i><span>Overview</span></a>
+                <a href="#" class="nav-item" data-target="map"><i class="fa-solid fa-map"></i><span>Live Map</span></a>
+                <a href="#" class="nav-item" data-target="issues"><i class="fa-solid fa-list-check"></i><span>Issue
+                        Manager</span></a>
+                <a href="#" class="nav-item" data-target="analytics"><i
+                        class="fa-solid fa-chart-pie"></i><span>Analytics</span></a>
+                <a href="#" class="nav-item" data-target="settings"><i
+                        class="fa-solid fa-gear"></i><span>Settings</span></a>
+                <a href="javascript:void(0)" class="nav-item logout-btn"><i
+                        class="fa-solid fa-sign-out-alt"></i><span>Logout</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" class="user-avatar">
+                    <div class="user-details"><span class="user-name">Administrator</span><span
+                            class="user-role">Authority Official</span></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="navbar">
+                <button id="toggle-sidebar" class="icon-btn"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="page-title">Authority Dashboard</h1>
+                <div class="navbar-actions">
+                    <button class="action-btn" id="new-report-btn"><i class="fa-solid fa-plus"></i><span>New
+                            Report</span></button>
+                </div>
+            </header>
+
+            <div id="content-area" class="content-area">
+                <!-- Stats Grid (Always Visible) -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary"><i class="fa-solid fa-list"></i></div>
+                        <div class="stat-info">
+                            <h3>Total Issues</h3>
+                            <p class="stat-value" id="stats-total">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon warning"><i class="fa-solid fa-hourglass-start"></i></div>
+                        <div class="stat-info">
+                            <h3>Pending Action</h3>
+                            <p class="stat-value" id="stats-pending">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon info"><i class="fa-solid fa-person-digging"></i></div>
+                        <div class="stat-info">
+                            <h3>Under Work</h3>
+                            <p class="stat-value" id="stats-work">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success"><i class="fa-solid fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3>Completed</h3>
+                            <p class="stat-value" id="stats-completed">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <div class="stat-info">
+                            <h3>Delayed</h3>
+                            <p class="stat-value" id="stats-delayed">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics -->
+                <section id="analytics-section" class="card">
+                    <div class="card-header">
+                        <h2>Analytics Overview</h2>
+                    </div>
+                    <div style="padding:20px;">Analytics charts loaded...</div>
+                </section>
+
+                <!-- Map Section -->
+                <section class="map-section card">
+                    <div class="card-header">
+                        <h2>Live Issue Map</h2>
+                    </div>
+                    <div id="map" class="map-container"></div>
+                </section>
+
+                <!-- Issues Table -->
+                <section class="issues-section card">
+                    <div class="card-header">
+                        <h2>Recent Reports</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="issues-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="issues-table-body"><!-- Populated by JS --></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="report-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Create New Report (Internal)</h2>
+                <button class="icon-btn" id="close-modal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="report-form">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select id="issue-type" class="form-select">
+                            <option value="pothole">Pothole</option>
+                            <option value="garbage">Garbage</option>
+                            <option value="lighting">Lighting</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <input type="text" id="issue-location" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="issue-desc" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Internal Note</label>
+                        <input type="text" id="issue-feedback" class="form-control" placeholder="Optional notes...">
+                    </div>
+                    <div class="form-group">
+                        <div class="file-upload" id="drop-zone"
+                            style="border:2px dashed var(--border-color); padding:20px; text-align:center; border-radius:8px; cursor:pointer;">
+                            <p>Upload Evidence</p>
+                            <input type="file" id="file-input" style="display:none">
+                            <img id="image-preview"
+                                style="display:none; width:100%; border-radius:8px; margin-top:8px;">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                <button class="btn btn-primary" id="save-report-btn">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="manage-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Manage Issue</h2>
+                <button class="icon-btn" id="close-manage-modal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="manage-details"></div>
+                <hr style="border:0; border-top:1px solid var(--border-color); margin:1.5rem 0;">
+                <form id="manage-form">
+                    <div class="form-group">
+                        <label class="form-label">Assigned Authority</label>
+                        <input type="text" id="manage-authority" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="manage-status" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Official Remarks</label>
+                        <textarea id="manage-note" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="close-manage-btn">Cancel</button>
+                <div style="flex:1;"></div>
+                <button class="btn btn-secondary" style="background:#fee2e2; color:#ef4444; border:none;"
+                    id="delete-issue-btn">Delete</button>
+                <button class="btn btn-primary" id="save-manage-btn">Update Issue</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Admin Profile</h2>
+                <button class="icon-btn" id="close-settings-modal"><i class="fa-solid fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input id="settings-name" class="form-control" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Jurisdiction (District)</label>
+                    <input id="settings-district" class="form-control" placeholder="District">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="save-settings-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script type="module">
+        window.PAGE_ROLE = 'admin'; // Flag for JS
+        import './dashboard-admin.js';
+    </script>
+</body>
+
+</html>

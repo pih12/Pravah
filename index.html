@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pravah 2 - FixMyCity Dashboard</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <i class="fa-solid fa-city"></i>
+          <span>Pravah</span>
+        </div>
+        <button id="close-sidebar" class="mobile-only"><i class="fa-solid fa-times"></i></button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" id="nav-dashboard" data-target="dashboard">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-map" data-target="map">
+          <i class="fa-solid fa-map"></i>
+          <span>Live Map</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-issues" data-target="issues">
+          <i class="fa-solid fa-list-check"></i>
+          <span>Issues</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-analytics" data-target="analytics">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Analytics</span>
+        </a>
+        <a href="#" class="nav-item" id="nav-settings" data-target="settings">
+          <i class="fa-solid fa-gear"></i>
+          <span>Settings</span>
+        </a>
+        <a href="javascript:void(0)" class="nav-item" onclick="logout()">
+          <i class="fa-solid fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <imgsrc="https: //ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="User"
+            class="user-avatar">
+            <div class="user-details">
+              <span class="user-name">Admin User</span>
+              <span class="user-role">City Official</span>
+            </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Navbar -->
+      <header class="navbar">
+        <button id="toggle-sidebar" class="icon-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <h1 class="page-title">Dashboard Overview</h1>
+
+        <div class="navbar-actions">
+          <button class="icon-btn notification-btn">
+            <i class="fa-solid fa-bell"></i>
+            <span class="badge">3</span>
+          </button>
+          <button class="action-btn" id="new-report-btn">
+            <i class="fa-solid fa-plus"></i>
+            <span>New Report</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <div id="content-area" class="content-area">
+        <!-- Stats Row (Admin Only) -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon primary">
+              <i class="fa-solid fa-list"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Total Issues</h3>
+              <p class="stat-value" id="stats-total">0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <i class="fa-solid fa-hourglass-start"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Pending Action</h3>
+              <p class="stat-value" id="stats-pending">0</p>
+              <span class="stat-trend neutral">Submitted/Received</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon info">
+              <i class="fa-solid fa-person-digging"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Under Work</h3>
+              <p class="stat-value" id="stats-work">0</p>
+              <span class="stat-trend positive">In Progress</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Completed</h3>
+              <p class="stat-value" id="stats-completed">0</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon danger">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-info">
+              <h3>Delayed</h3>
+              <p class="stat-value" id="stats-delayed">0</p>
+              <span class="stat-trend negative">Attention Required</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analytics Section (Admin Only) -->
+        <section id="analytics-section" class="card" style="display:none; margin-bottom: 20px;">
+          <div class="card-header">
+            <h2>Analytics Overview</h2>
+          </div>
+          <div
+            style="padding:20px; display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:20px;">
+            <!-- Issues by Type -->
+            <div style="background:#f9fafb; padding:15px; border-radius:8px;">
+              <h3 style="font-size:16px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">Issues
+                by Type</h3>
+              <div id="analytics-types-chart" style="display:flex; flex-direction:column; gap:10px;">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- System Health / Quick Stats -->
+            <div style="background:#f9fafb; padding:15px; border-radius:8px;">
+              <h3 style="font-size:16px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;">System
+                Health</h3>
+              <div style="display:flex; flex-direction:column; gap:15px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#555;">Server Status</span>
+                  <span style="color:#10B981; font-weight:600;">Online</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#555;">Database Connection</span>
+                  <span style="color:#10B981; font-weight:600;">Active</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#555;">Active Users (Est.)</span>
+                  <span style="font-weight:600;">24</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Map Section -->
+        <section class="map-section card">
+          <div class="card-header">
+            <h2>Live Issue Map</h2>
+            <div class="map-filters">
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="pothole">Potholes</button>
+              <button class="filter-btn" data-filter="garbage">Garbage</button>
+              <button class="filter-btn" data-filter="lighting">Lighting</button>
+            </div>
+          </div>
+          <div id="map" class="map-container"></div>
+          <div
+            style="margin-top:10px; font-size:12px; color:#666; display:flex; gap:15px; flex-wrap:wrap; align-items:center;">
+            <span
+              style="background:#9CA3AF; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Submitted</span>
+            <span
+              style="background:#6B7280; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Received</span>
+            <span style="background:#3B82F6; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Work
+              Started</span>
+            <span style="background:#3B82F6; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Under
+              Construction</span>
+            <span
+              style="background:#10B981; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Completed</span>
+            <span style="background:#EF4444; color:white; padding:2px 8px; border-radius:12px; font-size:10px;">Rejected
+              / Not Started</span>
+          </div>
+        </section>
+
+        <!-- Recent Issues Table -->
+        <section class="issues-section card">
+          <div class="card-header">
+            <h2>Recent Reports</h2>
+            <a href="#" class="view-all">View All</a>
+          </div>
+          <div class="table-responsive">
+            <table class="issues-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="issues-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- New Report Modal -->
+  <div class="modal-overlay" id="report-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Report Civic Issue</h2>
+        <button class="close-modal" id="close-modal"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="report-form">
+          <!-- Type and Location -->
+          <div class="form-group">
+            <label for="issue-type">Issue Type</label>
+            <select id="issue-type" class="form-control" required>
+              <option value="pothole">Pothole / Road Damage</option>
+              <option value="garbage">Garbage Dump</option>
+              <option value="lighting">Street Light Issue</option>
+              <option value="water">Water Leakage / Drainage</option>
+              <option value="electricity">Electricity / Wiring</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="issue-location">Location (City/Area)</label>
+            <input type="text" id="issue-location" class="form-control" placeholder="e.g. Vadodara, Alkapuri" required>
+          </div>
+
+          <div class="form-group">
+            <label for="issue-desc">Problem Statement</label>
+            <textarea id="issue-desc" class="form-control" rows="3" placeholder="Describe the issue in detail..."
+              required></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="issue-feedback">Feedback / Suggestion (Optional)</label>
+            <input type="text" id="issue-feedback" class="form-control" placeholder="Any suggestions for authorities?">
+          </div>
+
+          <div class="form-group">
+            <label>Upload Image</label>
+            <div class="file-upload" id="drop-zone">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Click to upload or drag and drop</p>
+              <input type="file" id="file-input" accept="image/*" style="display: none">
+              <img id="image-preview" alt="Preview">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-btn">Cancel</button>
+        <button class="btn btn-primary" id="save-report-btn">Submit Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manage Issue Modal (Admin) -->
+  <div class="modal-overlay" id="manage-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Manage Issue</h2>
+        <button class="close-modal" id="close-manage-modal"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div id="manage-details" class="mb-4">
+          <!-- Issue Details populated by JS -->
+        </div>
+
+        <form id="manage-form">
+          <div class="form-group">
+            <label>Assign Authority</label>
+            <input type="text" id="manage-authority" class="form-control" placeholder="e.g. Ward Officer A">
+          </div>
+
+          <div class="form-group">
+            <label>Update Status</label>
+            <select id="manage-status" class="form-control">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Admin Feedback / Note</label>
+            <textarea id="manage-note" class="form-control" rows="3" placeholder="Enter remarks..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" id="delete-issue-btn"
+          style="background:#ef4444; color:white; margin-right:auto;">Reject/Delete</button>
+        <button class="btn btn-secondary" id="close-manage-btn">Close</button>
+        <button class="btn btn-primary" id="save-manage-btn">Update Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal (Profile Update) -->
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>User Profile</h2>
+        <button class="close-modal" id="close-settings-modal"><i class="fa-solid fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="settings-form">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="settings-name" class="form-control" placeholder="Enter your name">
+          </div>
+          <div class="form-group">
+            <label>District / Zone</label>
+            <input type="text" id="settings-district" class="form-control" placeholder="e.g. Mumbai Suburban">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="close-settings-btn">Close</button>
+        <button class="btn btn-primary" id="save-settings-btn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Firebase SDKs -->
+  <script type="module" src="dashboard.js"></script>
+
+</body>
+
+</html>
